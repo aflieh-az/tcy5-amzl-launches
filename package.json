@@ -1,0 +1,21 @@
+{
+  "name": "tcy5-amzl-launches",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "serve": "serve src -p 8080",
+    "build": "node build-static.js"
+  },
+  "devDependencies": {
+    "fast-check": "^3.22.0",
+    "jsdom": "^25.0.1",
+    "serve": "^14.2.4",
+    "vitest": "^2.1.8"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  }
+}

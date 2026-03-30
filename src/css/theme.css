@@ -1,0 +1,97 @@
+/* theme.css — Color variables, typography, facility branding
+ * TCY5 AMZL Lane Launches
+ * Requirements: 4.1, 4.2
+ */
+
+:root {
+  /* Brand / facility colors */
+  --color-primary: #232f3e;
+  --color-primary-light: #37475a;
+  --color-accent: #ff9900;
+
+  /* Semantic colors */
+  --color-success: #28a745;
+  --color-warning: #ffc107;
+  --color-danger: #dc3545;
+  --color-info: #17a2b8;
+
+  /* Neutral palette */
+  --color-bg: #f5f6f8;
+  --color-surface: #ffffff;
+  --color-border: #dee2e6;
+  --color-border-strong: #333333;
+  --color-text: #212529;
+  --color-text-muted: #6c757d;
+
+  /* Alert backgrounds */
+  --color-alert-error-bg: #f8d7da;
+  --color-alert-error-text: #721c24;
+  --color-alert-error-border: #f5c6cb;
+  --color-alert-warning-bg: #fff3cd;
+  --color-alert-warning-text: #856404;
+  --color-alert-warning-border: #ffeeba;
+  --color-alert-info-bg: #d1ecf1;
+  --color-alert-info-text: #0c5460;
+  --color-alert-info-border: #bee5eb;
+
+  /* Table */
+  --color-row-alt: #f8f9fa;
+  --color-row-hover: #e9ecef;
+
+  /* Grid / floor layout */
+  --color-lane-border: #333333;
+  --color-cell-border: #999999;
+  --color-cell-empty: #f0f0f0;
+  --color-preserved: #f5c842;
+
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  --font-size-base: 14px;
+  --font-size-sm: 0.875em;
+  --font-size-lg: 1.125em;
+  --line-height: 1.5;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Border radius */
+  --radius: 4px;
+}
+
+/* Base reset & typography */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: var(--font-size-base);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+h1, h2, h3, h4 {
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--color-primary);
+}
+
+h1 {
+  font-size: 1.5em;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}

@@ -1,0 +1,110 @@
+/* layout.css — Page layout, tab panel structure, grid container sizing
+ * TCY5 AMZL Lane Launches
+ * Requirements: 4.1, 4.2
+ */
+
+/* Header */
+header {
+  background: var(--color-primary);
+  color: #fff;
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+header h1 {
+  color: #fff;
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+/* Tab navigation */
+#tab-nav {
+  display: flex;
+  gap: 2px;
+  background: var(--color-primary-light);
+  padding: 0 var(--spacing-lg);
+  overflow-x: auto;
+}
+
+.tab-btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  background: transparent;
+  color: #ffffffcc;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+}
+
+.tab-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.tab-btn.active {
+  color: #fff;
+  border-bottom-color: var(--color-accent);
+  background: rgba(255, 255, 255, 0.05);
+  font-weight: 600;
+}
+
+.tab-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+/* Panel container */
+#panel-container {
+  padding: var(--spacing-lg);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Panels — hidden by default, shown with .active */
+.panel {
+  display: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--spacing-lg);
+}
+
+.panel.active {
+  display: block;
+}
+
+/* File input container */
+#file-input-container {
+  padding: var(--spacing-md) var(--spacing-lg);
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+#file-input-container label {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+#file-input-container input[type="file"] {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+}
+
+/* Floor layout grid container — allow horizontal scroll for wide SVGs */
+#panel-floor-layout-grid {
+  overflow-x: auto;
+}
+
+/* Change overview lane sections */
+.change-overview-lane {
+  margin-bottom: var(--spacing-md);
+}
+
+.change-overview-lane h3 {
+  font-size: var(--font-size-lg);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--spacing-xs);
+}

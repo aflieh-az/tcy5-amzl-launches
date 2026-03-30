@@ -1,0 +1,191 @@
+/* components.css — KPI cards, alert bars, table styles, checklist,
+ * grid cell styles, lane boundary styling
+ * TCY5 AMZL Lane Launches
+ * Requirements: 4.1, 4.2
+ */
+
+/* ── Alert bar ─────────────────────────────────────────────── */
+#alert-bar {
+  display: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius);
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-base);
+}
+
+#alert-bar.alert-error {
+  background: var(--color-alert-error-bg);
+  color: var(--color-alert-error-text);
+  border: 1px solid var(--color-alert-error-border);
+}
+
+#alert-bar.alert-warning {
+  background: var(--color-alert-warning-bg);
+  color: var(--color-alert-warning-text);
+  border: 1px solid var(--color-alert-warning-border);
+}
+
+#alert-bar.alert-info {
+  background: var(--color-alert-info-bg);
+  color: var(--color-alert-info-text);
+  border: 1px solid var(--color-alert-info-border);
+}
+
+/* ── KPI bar ───────────────────────────────────────────────── */
+#kpi-bar {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.kpi-card {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius);
+  padding: var(--spacing-sm) var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+}
+
+.kpi-label {
+  font-size: var(--font-size-sm);
+  color: #ffffffaa;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.kpi-value {
+  font-size: 1.4em;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ── Tables (shared) ───────────────────────────────────────── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-base);
+}
+
+thead th {
+  text-align: left;
+  padding: var(--spacing-sm);
+  border-bottom: 2px solid var(--color-border-strong);
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: top;
+}
+
+tbody tr:nth-child(even) {
+  background: var(--color-row-alt);
+}
+
+tbody tr:hover {
+  background: var(--color-row-hover);
+}
+
+/* ── Warning banners (inline panel warnings) ───────────────── */
+.spot-warning-banner,
+.ops-warning-banner,
+.stem-discrepancy-alert {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius);
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-base);
+}
+
+.spot-warning-banner,
+.ops-warning-banner {
+  background: var(--color-alert-warning-bg);
+  color: var(--color-alert-warning-text);
+  border: 1px solid var(--color-alert-warning-border);
+}
+
+.stem-validation-banner {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius);
+  margin-bottom: var(--spacing-md);
+}
+
+/* ── SPAO warning badge ────────────────────────────────────── */
+.spao-warning-badge {
+  display: inline-block;
+  background: #e67e22;
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+/* ── Ops checklist ─────────────────────────────────────────── */
+.ops-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--color-success);
+}
+
+.ops-go-live-btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-family: var(--font-family);
+  font-size: 1em;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  background: var(--color-success);
+  color: #fff;
+}
+
+.ops-go-live-btn:hover:not(:disabled) {
+  background: #218838;
+}
+
+.ops-go-live-btn:disabled {
+  background: var(--color-text-muted);
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* ── STEM download button ──────────────────────────────────── */
+.stem-download-btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-family: var(--font-family);
+  font-size: 1em;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  background: var(--color-success);
+  color: #fff;
+}
+
+.stem-download-btn:hover:not(:disabled) {
+  background: #218838;
+}
+
+.stem-download-btn:disabled {
+  background: var(--color-text-muted);
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* ── SVG grid cells & lane boundaries ──────────────────────── */
+svg text {
+  font-family: var(--font-family);
+}
+
+/* Error row highlighting in SPOT and STEM tables */
+.spot-error-row td {
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+}

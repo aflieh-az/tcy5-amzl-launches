@@ -1,0 +1,9 @@
+# Node.js
+node_modules/
+dist/
+npm-debug.log*
+
+# IDE
+.vscode/
+.DS_Store
+Thumbs.db
