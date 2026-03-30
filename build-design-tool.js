@@ -284,12 +284,15 @@ const body = `<header>
 <span class="sep"></span>
 <button class="b ac" id="bal">+ Add Lane</button>
 <button class="b" id="bex">⬇ Export CSV</button>
+<button class="b" id="bss">📸 Screenshot</button>
 <span class="sep"></span>
 <button class="b" id="bzo">−</button>
 <span id="zl" style="font-size:11px;color:var(--text-secondary);min-width:36px;text-align:center;font-weight:600">100%</span>
 <button class="b" id="bzi">+</button>
 <span class="sep"></span>
 <button class="b" id="btv">👁 Before/After</button>
+<span class="sep"></span>
+<button class="b" id="bss">📸 Screenshot</button>
 </div>
 
 <div class="scn">
@@ -495,6 +498,7 @@ $('bcl').addEventListener('click',bCl);$('bsw').addEventListener('click',()=>{if
 $('bzi').addEventListener('click',()=>{zm=Math.min(200,zm+10);render()});$('bzo').addEventListener('click',()=>{zm=Math.max(50,zm-10);render()});
 $('bex').addEventListener('click',()=>{const rows=[['Row','Lane','Chute','Filter','Type','ADV','Previous Filter','Previous Type','Previous ADV','Type Changed','Note','Changed']];G.forEach((row,ri)=>row.cells.forEach((cell,ci)=>{const chg=isChanged(ri,ci);const orig=chg?oc(ri,ci):null;const typeFlip=chg&&orig&&orig.fl!==cell.fl?((orig.fl?'D2C':'Multi')+' -> '+(cell.fl?'D2C':'Multi')):'';rows.push([row.rn,cell.ln,cell.id,cell.f,cell.rt,cell.adv||'',chg?(orig.f||''):'',chg?(orig.fl?'D2C (FLAT)':'Multi'):'',chg?(orig.adv||''):'',typeFlip,notes[K(ri,ci)]||'',chg?'YES':''])}));const csv='\\uFEFF'+rows.map(r=>r.map(v=>'\"'+String(v).replace(/\"/g,'\"\"')+'\"').join(',')).join('\\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='tcy5-layout-'+new Date().toISOString().slice(0,10)+'.csv';a.click()});
 $('bexc').addEventListener('click',()=>{const rows=[['Chute','Row','Lane','What Changed','Previous Filter','New Filter','Previous Type','New Type','Previous ADV','New ADV','ADV Delta','Note']];for(let r=0;r<G.length;r++)for(let c=0;c<G[r].cells.length;c++){if(isChanged(r,c)){const cur=gc(r,c),orig=oc(r,c);const changes=[];if(orig.f!==cur.f)changes.push('Filter: '+orig.f+' -> '+cur.f);if(orig.fl!==cur.fl)changes.push('Type: '+(orig.fl?'D2C':'Multi')+' -> '+(cur.fl?'D2C':'Multi'));if(orig.adv!==cur.adv)changes.push('ADV: '+(orig.adv||0)+' -> '+(cur.adv||0));const delta=(cur.adv||0)-(orig.adv||0);rows.push([cur.id,G[r].rn,cur.ln,changes.join(' | '),orig.f||'(empty)',cur.f||'(empty)',orig.fl?'D2C (FLAT)':'Multi',cur.fl?'D2C (FLAT)':'Multi',orig.adv||0,cur.adv||0,delta>0?'+'+delta:delta,notes[K(r,c)]||''])}}if(rows.length<=1){alert('No changes to export');return}const csv='\\uFEFF'+rows.map(r=>r.map(v=>'\"'+String(v).replace(/\"/g,'\"\"')+'\"').join(',')).join('\\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='tcy5-changes-'+new Date().toISOString().slice(0,10)+'.csv';a.click()});
+$('bss').addEventListener('click',()=>{const btn=$('bss');btn.textContent='\\u23f3 Capturing...';btn.disabled=true;const target=document.querySelector('#zoom-wrap')||$('gw');html2canvas(target,{backgroundColor:'#0b0b1e',scale:2,useCORS:true,logging:false}).then(canvas=>{canvas.toBlob(blob=>{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='tcy5-layout-'+new Date().toISOString().slice(0,10)+'.png';a.click();URL.revokeObjectURL(url);btn.textContent='\\ud83d\\udcf8 Screenshot';btn.disabled=false},'image/png')}).catch(()=>{alert('Screenshot failed');btn.textContent='\\ud83d\\udcf8 Screenshot';btn.disabled=false})});
 $('bal').addEventListener('click',()=>{$('nf').value='';$('na').value='';$('nty').value='Multi';rebuildCatDropdowns();$('nca').value='AMZL_NEW';$('m1').classList.add('open')});$('mc1').addEventListener('click',()=>$('m1').classList.remove('open'));
 $('mc2').addEventListener('click',()=>{const f=$('nf').value.trim();if(!f){alert('Enter filter');return}const adv=parseInt($('na').value)||0;const t=$('nty').value;let cat=$('nca').value;
 if(cat==='__CUSTOM__'){const cname=$('ncc-name').value.trim();const ccolor=$('ncc-color').value;if(!cname){alert('Enter custom category name');return}cat='CUSTOM_'+cname.toUpperCase().replace(/[^A-Z0-9]/g,'_');WC[cat]={b:ccolor,t:getBrightness(ccolor)<128?'#fff':'#000',l:cname};updateLegend()}
@@ -654,11 +658,43 @@ document.addEventListener('mouseup',function(e){
 });
 
 render();
+
+// ── Screenshot: capture grid + legend as PNG ────────────────
+$('bss').addEventListener('click', async ()=>{
+  $('bss').disabled=true;$('bss').textContent='⏳ Capturing...';
+  if(!window.html2canvas){
+    await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)});
+  }
+  const wrap=document.createElement('div');
+  wrap.style.cssText='position:absolute;left:-9999px;top:0;background:#0b0b1e;padding:16px;';
+  const hdr=document.createElement('div');
+  hdr.style.cssText='padding:10px 16px;margin-bottom:8px;font-family:Inter,sans-serif;color:#e8e8f0;font-size:16px;font-weight:700;';
+  hdr.textContent='TCY5 Floor Layout — '+new Date().toLocaleDateString();
+  wrap.appendChild(hdr);
+  const lgClone=document.querySelector('.lg').cloneNode(true);
+  lgClone.style.cssText+='padding:8px 16px;margin-bottom:8px;background:#111128;border:1px solid #2a2a55;border-radius:6px;';
+  wrap.appendChild(lgClone);
+  const gridEl=document.getElementById('zoom-wrap')||document.querySelector('table.fg');
+  const gridClone=gridEl.cloneNode(true);
+  gridClone.style.transform='none';
+  wrap.appendChild(gridClone);
+  document.body.appendChild(wrap);
+  try{
+    const canvas=await html2canvas(wrap,{backgroundColor:'#0b0b1e',scale:2,useCORS:true});
+    const a=document.createElement('a');
+    a.href=canvas.toDataURL('image/png');
+    a.download='tcy5-layout-'+new Date().toISOString().slice(0,10)+'.png';
+    a.click();
+  }catch(e){alert('Screenshot failed: '+e.message)}
+  document.body.removeChild(wrap);
+  $('bss').disabled=false;$('bss').textContent='📸 Screenshot';
+});
 `;
 
 const fullHtml = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>TCY5 Floor Layout Designer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>
 <style>${css}</style></head>
 <body>
 ${body}
