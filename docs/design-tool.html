@@ -1,7 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>TCY5 Floor Layout Designer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>*,*::before,*::after{box-sizing:border-box}
 body{margin:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13px;background:#0b0b1e;color:#e0e0e0;user-select:none}
 :root{--accent:#ff9900;--accent-dim:rgba(255,153,0,.15);--red:#e63946;--green:#2ec4b6;--blue:#4ea8de;--bg1:#0b0b1e;--bg2:#111128;--bg3:#161638;--bg4:#1c1c48;--bdr:#2a2a55;--bdr-light:#353570;--text-primary:#e8e8f0;--text-secondary:#8888aa;--text-dim:#555577;--radius:6px;--radius-sm:4px;--shadow:0 2px 8px rgba(0,0,0,.3)}
@@ -558,34 +557,79 @@ document.addEventListener('mouseup',function(e){
 
 render();
 
-// ── Screenshot: capture grid + legend as PNG ────────────────
-$('bss').addEventListener('click', async ()=>{
+// ── Screenshot: pure Canvas API — draws grid + legend directly ──
+$('bss').addEventListener('click', ()=>{
   $('bss').disabled=true;$('bss').textContent='⏳ Capturing...';
-  if(!window.html2canvas){
-    await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)});
-  }
-  const wrap=document.createElement('div');
-  wrap.style.cssText='position:absolute;left:-9999px;top:0;background:#0b0b1e;padding:16px;';
-  const hdr=document.createElement('div');
-  hdr.style.cssText='padding:10px 16px;margin-bottom:8px;font-family:Inter,sans-serif;color:#e8e8f0;font-size:16px;font-weight:700;';
-  hdr.textContent='TCY5 Floor Layout — '+new Date().toLocaleDateString();
-  wrap.appendChild(hdr);
-  const lgClone=document.querySelector('.lg').cloneNode(true);
-  lgClone.style.cssText+='padding:8px 16px;margin-bottom:8px;background:#111128;border:1px solid #2a2a55;border-radius:6px;';
-  wrap.appendChild(lgClone);
-  const gridEl=document.getElementById('zoom-wrap')||document.querySelector('table.fg');
-  const gridClone=gridEl.cloneNode(true);
-  gridClone.style.transform='none';
-  wrap.appendChild(gridClone);
-  document.body.appendChild(wrap);
   try{
-    const canvas=await html2canvas(wrap,{backgroundColor:'#0b0b1e',scale:2,useCORS:true});
+    const src=showOrig?OG:G;
+    const CW=62,CH=42,PAD=16,HDR=36,LGH=40,RH=20,RW=50;
+    const cols=LN.length,rows=src.length;
+    const totalW=RW+cols*CW+PAD*2;
+    const totalH=PAD+HDR+LGH+RH+rows*CH+PAD;
+    const cv=document.createElement('canvas');cv.width=totalW*2;cv.height=totalH*2;
+    const ctx=cv.getContext('2d');ctx.scale(2,2);
+    // Background
+    ctx.fillStyle='#0b0b1e';ctx.fillRect(0,0,totalW,totalH);
+    // Title
+    ctx.fillStyle='#e8e8f0';ctx.font='bold 14px Inter,sans-serif';
+    ctx.fillText('TCY5 Floor Layout — '+new Date().toLocaleDateString(),PAD,PAD+16);
+    // Legend
+    const lgY=PAD+HDR;
+    const cats=Object.entries(WC).filter(([k])=>{for(const row of src)for(const cell of row.cells)if(cell.cat===k)return true;return false});
+    let lx=PAD;
+    ctx.font='bold 9px Inter,sans-serif';
+    for(const[k,v]of cats){
+      ctx.fillStyle=v.b;ctx.fillRect(lx,lgY,12,12);
+      ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.strokeRect(lx,lgY,12,12);
+      ctx.fillStyle='#c0c0d0';ctx.fillText(v.l,lx+16,lgY+10);
+      lx+=ctx.measureText(v.l).width+30;
+      if(lx>totalW-60){lx=PAD;}
+    }
+    // Column headers (Lane numbers)
+    const gridTop=lgY+LGH;
+    ctx.font='bold 8px Inter,sans-serif';ctx.fillStyle='#8888aa';ctx.textAlign='center';
+    for(let c=0;c<cols;c++){
+      const x=PAD+RW+c*CW+CW/2;
+      ctx.fillText('L'+LN[c],x,gridTop+14);
+    }
+    // Rows
+    const cellTop=gridTop+RH;
+    for(let r=0;r<rows;r++){
+      const y=cellTop+r*CH;
+      // Row label
+      ctx.textAlign='center';ctx.fillStyle='#8888aa';ctx.font='bold 8px Inter,sans-serif';
+      ctx.fillText('R'+src[r].rn,PAD+RW/2,y+CH/2+3);
+      for(let c=0;c<src[r].cells.length;c++){
+        const cell=src[r].cells[c];
+        const x=PAD+RW+c*CW;
+        const co=WC[cell.cat]||WC.EMPTY;
+        // Cell background
+        ctx.fillStyle=co.b;ctx.fillRect(x+1,y+1,CW-2,CH-2);
+        // Cell border
+        ctx.strokeStyle='rgba(42,42,85,0.6)';ctx.strokeRect(x+1,y+1,CW-2,CH-2);
+        // Changed indicator
+        if(!showOrig&&isChanged(r,c)){ctx.strokeStyle='#ff9900';ctx.lineWidth=2;ctx.strokeRect(x+1,y+1,CW-2,CH-2);ctx.lineWidth=1}
+        // Type badge (F/M)
+        ctx.font='bold 7px Inter,sans-serif';ctx.textAlign='right';
+        ctx.fillStyle=cell.fl?'#ff6b6b':'#4ecdc4';
+        ctx.fillText(cell.fl?'F':'M',x+CW-4,y+10);
+        // Chute ID
+        ctx.textAlign='center';ctx.fillStyle=co.t;ctx.font='bold 7px Inter,sans-serif';
+        ctx.fillText(String(cell.id),x+CW/2,y+14);
+        // Filter name (truncated)
+        ctx.font='6px Inter,sans-serif';
+        const fn=cell.f||'';const tfn=fn.length>10?fn.slice(0,9)+'…':fn;
+        ctx.fillText(tfn,x+CW/2,y+24);
+        // ADV
+        if(cell.adv!=null){ctx.font='6px Inter,sans-serif';ctx.globalAlpha=0.7;ctx.fillText(String(cell.adv),x+CW/2,y+33);ctx.globalAlpha=1}
+      }
+    }
+    // Download
     const a=document.createElement('a');
-    a.href=canvas.toDataURL('image/png');
+    a.href=cv.toDataURL('image/png');
     a.download='tcy5-layout-'+new Date().toISOString().slice(0,10)+'.png';
     a.click();
   }catch(e){alert('Screenshot failed: '+e.message)}
-  document.body.removeChild(wrap);
   $('bss').disabled=false;$('bss').textContent='📸 Screenshot';
 });
 </script>
