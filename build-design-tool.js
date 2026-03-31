@@ -286,6 +286,9 @@ const body = `<header>
 <button class="b" id="bex">⬇ Export CSV</button>
 <button class="b" id="bss">📸 Screenshot</button>
 <span class="sep"></span>
+<button class="b ac" id="bup" onclick="document.getElementById('xup').click()">📂 Upload Layout</button>
+<input type="file" id="xup" accept=".xlsx,.xls" style="display:none">
+<span class="sep"></span>
 <button class="b" id="bzo">−</button>
 <span id="zl" style="font-size:11px;color:var(--text-secondary);min-width:36px;text-align:center;font-weight:600">100%</span>
 <button class="b" id="bzi">+</button>
@@ -475,9 +478,9 @@ function bCl(){if(!sel.size)return;const b=[];sel.forEach(k=>{const[r,c]=k.split
 function bTg(){if(!sel.size)return;const b=[];sel.forEach(k=>{const[r,c]=k.split(',').map(Number);b.push({r,c,p:JSON.parse(JSON.stringify(gc(r,c)))})});H.push({t:'bk',b});b.forEach(({r,c})=>{const cell=gc(r,c);cell.fl=!cell.fl;cell.rt=cell.fl?'D2C':'Multi'});sel.forEach(k=>chgMap[k]='bk');lg('\\ud83d\\udd04 Toggled '+b.length);render()}
 function undo(){if(!H.length)return;const last=H.pop();const log=$('bp-log');if(log.firstChild)log.removeChild(log.firstChild);if(last.t==='sw'){for(const k of KS){G[last.r1].cells[last.c1][k]=last.a[k];G[last.r2].cells[last.c2][k]=last.b[k]}}else if(last.t==='pl'){const cell=gc(last.r,last.c);for(const k of KS)cell[k]=last.prev[k]}else if(last.t==='bk'){last.b.forEach(({r,c,p})=>{const cell=gc(r,c);for(const k of KS)cell[k]=p[k]})}render()}
 function lg(h){const d=document.createElement('div');d.className='e';d.innerHTML=h;$('bp-log').insertBefore(d,$('bp-log').firstChild)}
-function onCM(e){e.preventDefault();if(showOrig)return;const r=+e.currentTarget.dataset.r,c=+e.currentTarget.dataset.c,key=K(r,c);if(!sel.has(key)){sel.clear();sel.add(key);rSV();upSt();upIns()}const m=$('cm'),cell=gc(r,c);const n=sel.size;const multi=n>1;m.innerHTML='<div class=\"ci2\" data-a=\"ins\"><span class=\"cm-icon\">🔍</span>'+(multi?'Inspect ('+n+' cells)':'Inspect Cell')+'</div><div class=\"ci2\" data-a=\"sr\"><span class=\"cm-icon\">↔</span>Select Row '+G[r].rn+'</div><div class=\"ci2\" data-a=\"sl\"><span class=\"cm-icon\">↕</span>Select Lane '+cell.ln+'</div><div class=\"ci2\" data-a=\"sf\"><span class=\"cm-icon\">🎯</span>Select Same Filter</div><div class=\"cs\"></div><div class=\"ci2\" data-a=\"cl\"><span class=\"cm-icon\">🗑</span>'+(multi?'Clear '+n+' Cells':'Clear Cell')+'</div><div class=\"ci2\" data-a=\"st\"><span class=\"cm-icon\">✏</span>'+(multi?'Set Filter on '+n+' Cells':'Set Filter…')+'</div><div class=\"ci2\" data-a=\"mf\"><span class=\"cm-icon\">F</span>'+(multi?'Set FLAT on '+n+' Cells':'Set as FLAT')+'</div><div class=\"ci2\" data-a=\"mm\"><span class=\"cm-icon\">M</span>'+(multi?'Set Multi on '+n+' Cells':'Set as Multi')+'</div><div class=\"cs\"></div><div class=\"ci2\" data-a=\"cp\"><span class=\"cm-icon\">📋</span>Copy Filter</div><div class=\"ci2\" data-a=\"an\"><span class=\"cm-icon\">💬</span>Add Note</div>';m.style.left=Math.min(e.clientX,innerWidth-180)+'px';m.style.top=Math.min(e.clientY,innerHeight-220)+'px';m.style.display='block';m.querySelectorAll('.ci2').forEach(i=>i.addEventListener('click',()=>{m.style.display='none';cAct(i.dataset.a,r,c)}))}
+function onCM(e){e.preventDefault();if(showOrig)return;const r=+e.currentTarget.dataset.r,c=+e.currentTarget.dataset.c,key=K(r,c);if(!sel.has(key)){sel.clear();sel.add(key);rSV();upSt();upIns()}const m=$('cm'),cell=gc(r,c);const n=sel.size;const multi=n>1;m.innerHTML='<div class=\"ci2\" data-a=\"ins\"><span class=\"cm-icon\">🔍</span>'+(multi?'Inspect ('+n+' cells)':'Inspect Cell')+'</div><div class=\"ci2\" data-a=\"sr\"><span class=\"cm-icon\">↔</span>Select Row '+G[r].rn+'</div><div class=\"ci2\" data-a=\"sl\"><span class=\"cm-icon\">↕</span>Select Lane '+cell.ln+'</div><div class=\"ci2\" data-a=\"sf\"><span class=\"cm-icon\">🎯</span>Select Same Filter</div><div class=\"cs\"></div><div class=\"ci2\" data-a=\"cl\"><span class=\"cm-icon\">🗑</span>'+(multi?'Clear '+n+' Cells':'Clear Cell')+'</div><div class=\"ci2\" data-a=\"st\"><span class=\"cm-icon\">✏</span>'+(multi?'Set Filter on '+n+' Cells':'Set Filter…')+'</div><div class=\"ci2\" data-a=\"mf\"><span class=\"cm-icon\">F</span>'+(multi?'Set FLAT on '+n+' Cells':'Set as FLAT')+'</div><div class=\"ci2\" data-a=\"mm\"><span class=\"cm-icon\">M</span>'+(multi?'Set Multi on '+n+' Cells':'Set as Multi')+'</div><div class=\"cs\"></div><div class=\"ci2\" data-a=\"cp\"><span class=\"cm-icon\">📋</span>Copy Filter</div><div class=\"ci2\" data-a=\"av\"><span class=\"cm-icon\">📊</span>'+(multi?'Adjust Volume on '+n+' Cells':'Adjust Volume')+'</div><div class=\"ci2\" data-a=\"an\"><span class=\"cm-icon\">💬</span>Add Note</div>';m.style.left=Math.min(e.clientX,innerWidth-180)+'px';m.style.top=Math.min(e.clientY,innerHeight-220)+'px';m.style.display='block';m.querySelectorAll('.ci2').forEach(i=>i.addEventListener('click',()=>{m.style.display='none';cAct(i.dataset.a,r,c)}))}
 document.addEventListener('click',e=>{if(!e.target.closest('.cm'))$('cm').style.display='none'});
-function cAct(a,r,c){const cell=gc(r,c);if(a==='ins'){if(sel.size<=1){sel.clear();sel.add(K(r,c))}upIns();upSt();rSV();switchRP('inspect')}else if(a==='sr'){sel.clear();G[r].cells.forEach((_,ci)=>{if(!isLocked(r,ci))sel.add(K(r,ci))});rSV();upSt();upIns()}else if(a==='sl'){sel.clear();const l=cell.ln;G.forEach((row,ri)=>row.cells.forEach((cc,ci)=>{if(cc.ln===l&&!isLocked(ri,ci))sel.add(K(ri,ci))}));rSV();upSt();upIns()}else if(a==='sf'){const f=cell.f;if(!f){return}sel.clear();const prefix=f.split('-')[0];G.forEach((row,ri)=>row.cells.forEach((cc,ci)=>{if(!isLocked(ri,ci)&&cc.f&&(cc.f===f||cc.f.startsWith(prefix+'-')||cc.f===prefix))sel.add(K(ri,ci))}));rSV();upSt();upIns()}else if(a==='cl')bCl();else if(a==='tg')bTg();else if(a==='st'){rebuildCatDropdowns();$('m2').classList.add('open')}else if(a==='mf'){if(!sel.size)return;const b=[];sel.forEach(k=>{const[rr,cc]=k.split(',').map(Number);b.push({r:rr,c:cc,p:JSON.parse(JSON.stringify(gc(rr,cc)))})});H.push({t:'bk',b});b.forEach(({r:rr,c:cc})=>{const c2=gc(rr,cc);c2.fl=true;c2.rt='D2C'});sel.forEach(k=>chgMap[k]='bk');lg('Set FLAT on '+b.length);render()}else if(a==='mm'){if(!sel.size)return;const b=[];sel.forEach(k=>{const[rr,cc]=k.split(',').map(Number);b.push({r:rr,c:cc,p:JSON.parse(JSON.stringify(gc(rr,cc)))})});H.push({t:'bk',b});b.forEach(({r:rr,c:cc})=>{const c2=gc(rr,cc);c2.fl=false;c2.rt='Multi'});sel.forEach(k=>chgMap[k]='bk');lg('Set Multi on '+b.length);render()}else if(a==='cp')navigator.clipboard.writeText(cell.f).catch(()=>{});else if(a==='an'){sel.clear();sel.add(K(r,c));rSV();upSt();upIns();switchRP('notes')}}
+function cAct(a,r,c){const cell=gc(r,c);if(a==='ins'){if(sel.size<=1){sel.clear();sel.add(K(r,c))}upIns();upSt();rSV();switchRP('inspect')}else if(a==='sr'){sel.clear();G[r].cells.forEach((_,ci)=>{if(!isLocked(r,ci))sel.add(K(r,ci))});rSV();upSt();upIns()}else if(a==='sl'){sel.clear();const l=cell.ln;G.forEach((row,ri)=>row.cells.forEach((cc,ci)=>{if(cc.ln===l&&!isLocked(ri,ci))sel.add(K(ri,ci))}));rSV();upSt();upIns()}else if(a==='sf'){const f=cell.f;if(!f){return}sel.clear();const prefix=f.split('-')[0];G.forEach((row,ri)=>row.cells.forEach((cc,ci)=>{if(!isLocked(ri,ci)&&cc.f&&(cc.f===f||cc.f.startsWith(prefix+'-')||cc.f===prefix))sel.add(K(ri,ci))}));rSV();upSt();upIns()}else if(a==='cl')bCl();else if(a==='tg')bTg();else if(a==='st'){rebuildCatDropdowns();$('m2').classList.add('open')}else if(a==='mf'){if(!sel.size)return;const b=[];sel.forEach(k=>{const[rr,cc]=k.split(',').map(Number);b.push({r:rr,c:cc,p:JSON.parse(JSON.stringify(gc(rr,cc)))})});H.push({t:'bk',b});b.forEach(({r:rr,c:cc})=>{const c2=gc(rr,cc);c2.fl=true;c2.rt='D2C'});sel.forEach(k=>chgMap[k]='bk');lg('Set FLAT on '+b.length);render()}else if(a==='mm'){if(!sel.size)return;const b=[];sel.forEach(k=>{const[rr,cc]=k.split(',').map(Number);b.push({r:rr,c:cc,p:JSON.parse(JSON.stringify(gc(rr,cc)))})});H.push({t:'bk',b});b.forEach(({r:rr,c:cc})=>{const c2=gc(rr,cc);c2.fl=false;c2.rt='Multi'});sel.forEach(k=>chgMap[k]='bk');lg('Set Multi on '+b.length);render()}else if(a==='cp')navigator.clipboard.writeText(cell.f).catch(()=>{});else if(a==='av'){const cur=sel.size===1?String(cell.adv||0):'';const input=prompt('Enter new volume (ADV):'+(sel.size>1?' (applies to all '+sel.size+' selected)':''),cur);if(input===null)return;const newAdv=parseInt(input,10);if(isNaN(newAdv)){alert('Invalid number');return}const b=[];sel.forEach(k=>{const[rr,cc]=k.split(',').map(Number);b.push({r:rr,c:cc,p:JSON.parse(JSON.stringify(gc(rr,cc)))})});H.push({t:'bk',b});b.forEach(({r:rr,c:cc})=>{gc(rr,cc).adv=newAdv});sel.forEach(k=>chgMap[k]='bk');lg('\\ud83d\\udcca Set ADV '+newAdv+' on '+b.length+' cell'+(b.length>1?'s':''));render();upIns()}else if(a==='an'){sel.clear();sel.add(K(r,c));rSV();upSt();upIns();switchRP('notes')}}
 function switchRP(name){document.querySelectorAll('.rp-tab').forEach(t=>t.classList.toggle('on',t.dataset.rp===name));$('rp-inspect').style.display=name==='inspect'?'block':'none';$('rp-notes').style.display=name==='notes'?'block':'none'}
 document.querySelectorAll('.rp-tab').forEach(t=>t.addEventListener('click',()=>switchRP(t.dataset.rp)));
 document.querySelectorAll('.tabs .tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tabs .tab').forEach(x=>x.classList.remove('on'));t.classList.add('on');document.querySelectorAll('.bp').forEach(p=>p.classList.remove('on'));$('bp-'+t.dataset.bp).classList.add('on')}));
@@ -656,6 +659,113 @@ document.addEventListener('mouseup',function(e){
 
 render();
 
+// ── Upload Layout: parse pallet_position + sortation_rules ──
+function classifyFilterClient(filter){
+  if(!filter)return 'EMPTY';
+  const f=filter.toUpperCase();
+  if(f==='DYNAMIC')return 'DYNAMIC';
+  if(f==='PSOLVE')return 'PSOLVE';
+  if(f==='RECIRC')return 'RECIRC';
+  if(f.includes('KSMF'))return 'KSMF';
+  if(f.includes('USPS')||f.includes('LPC-'))return 'USPS';
+  if(f.startsWith('FF')||f.startsWith('USC')||f.startsWith('USA')||f.startsWith('UST'))return 'FF';
+  if(f.includes('CYCLE1-SMALL')||f.includes('CYCLE1-NONMACH'))return 'CYCLE';
+  if(f.includes('CYCLE1'))return 'CYCLE';
+  if(f.includes('-SMALL'))return 'SMALL';
+  if(f.includes('-LARGE'))return 'LARGE';
+  if(/^\\d{5}/.test(f))return 'MIXED';
+  return 'MIXED';
+}
+$('xup').addEventListener('change',function(ev){
+  const file=ev.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const data=new Uint8Array(e.target.result);
+      const wb=XLSX.read(data,{type:'array'});
+      // ── Parse volume data → ADV map ──
+      // Supports: ONE METRIC (Rows / Total Pkg Count), pallet_position (Stacking Location / Avg. Total Packages)
+      const palletMap=new Map();
+      const palletSheet=wb.SheetNames.find(s=>s.toLowerCase().includes('pallet'))
+        ||wb.SheetNames.find(s=>s.toLowerCase().includes('sheet'))
+        ||wb.SheetNames[0];
+      if(palletSheet){
+        const rows=XLSX.utils.sheet_to_json(wb.Sheets[palletSheet],{defval:null});
+        for(const row of rows){
+          const loc=row['Rows']||row['Stacking Location']||'';
+          const rawAdv=row['Total Pkg Count']||row['Avg. Total Packages']||0;
+          const adv=Math.round(parseFloat(String(rawAdv).replace(/,/g,''))||0);
+          if(!loc||!String(loc).startsWith('ARSC-'))continue;
+          const base=String(loc).replace('ARSC-','').split('-')[0];
+          palletMap.set(base,(palletMap.get(base)||0)+adv);
+        }
+      }
+      // ── Parse sortation_rules → filter/type map ──
+      const ruleSheet=wb.SheetNames.find(s=>s.toLowerCase().includes('sortation'))
+        ||wb.SheetNames.find(s=>s.toLowerCase().includes('rule'));
+      const ruleMap=new Map(); // base chute → {filter, isFlat, varAdv}
+      if(ruleSheet){
+        // Build a lookup from resource label → ADV for determining dominant variant
+        const palletByLabel=new Map();
+        if(palletSheet){
+          const pRows=XLSX.utils.sheet_to_json(wb.Sheets[palletSheet],{defval:null});
+          for(const pr of pRows){
+            const pLoc=(pr['Rows']||pr['Stacking Location']||'').trim();
+            const rawAdv=pr['Total Pkg Count']||pr['Avg. Total Packages']||0;
+            const pAdv=Math.round(parseFloat(String(rawAdv).replace(/,/g,''))||0);
+            if(pLoc)palletByLabel.set(pLoc,pAdv);
+          }
+        }
+        const rows=XLSX.utils.sheet_to_json(wb.Sheets[ruleSheet],{defval:null});
+        for(const row of rows){
+          const chute=String(row['Chute']||'').trim();
+          if(!chute)continue;
+          const base=chute.replace(/^0+/,'');
+          const sf=row['Stacking Filter']||'';
+          const rl=row['Resource Label']||'';
+          const isFlat=String(rl).toUpperCase().includes('-FLAT');
+          const varAdv=palletByLabel.get(rl)||0;
+          const existing=ruleMap.get(base);
+          if(!existing||varAdv>existing.varAdv){
+            ruleMap.set(base,{filter:sf,isFlat,varAdv,cat:classifyFilterClient(sf)});
+          }
+        }
+      }
+      // ── Apply to grid ──
+      let updated=0;
+      for(const row of G){
+        for(const cell of row.cells){
+          const base=String(cell.id).replace(/^0+/,'');
+          const rule=ruleMap.get(base);
+          const adv=palletMap.get(base);
+          if(rule){
+            cell.f=rule.filter;
+            cell.cat=rule.cat;
+            cell.fl=rule.isFlat;
+            cell.rt=rule.isFlat?'D2C':'Multi';
+            cell.ro=rule.filter;
+            updated++;
+          }
+          if(adv!=null){cell.adv=adv}
+          // Tag empty reserved lanes as FPD
+          if(RL.includes(cell.ln)&&(!cell.f||cell.cat==='EMPTY'))cell.cat='FPD';
+        }
+      }
+      // ── Update OG snapshot so change tracking resets ──
+      for(let r=0;r<G.length;r++)for(let c=0;c<G[r].cells.length;c++)Object.assign(OG[r].cells[c],G[r].cells[c]);
+      H=[];sel.clear();notes={};chgMap={};$('bp-log').innerHTML='';
+      render();upIns();
+      lg('\\ud83d\\udcc2 Uploaded layout: '+updated+' chutes updated from '+file.name);
+      alert('Layout updated: '+updated+' chutes refreshed from '+file.name);
+    }catch(err){
+      console.error('Upload error:',err);
+      alert('Failed to parse file: '+err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+  this.value='';
+});
+
 // ── Screenshot: pure Canvas API — draws grid + legend directly ──
 $('bss').addEventListener('click', ()=>{
   $('bss').disabled=true;$('bss').textContent='⏳ Capturing...';
@@ -736,6 +846,7 @@ $('bss').addEventListener('click', ()=>{
 const fullHtml = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>TCY5 Floor Layout Designer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"><\/script>
 <style>${css}</style></head>
 <body>
 ${body}
