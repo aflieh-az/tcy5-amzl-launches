@@ -444,7 +444,7 @@ for(let c=0;c<row.cells.length;c++){const cell=row.cells[c],co=clr(cell),iS=sel.
 const chg=!showOrig&&isChanged(r,c),hasN=!!notes[K(r,c)],ct=chgMap[K(r,c)]||'';
 let cl='c';if(isLocked(r,c))cl+=' locked';if(iS)cl+=' sel';if(iH)cl+=' hit';if(pm)cl+=' pt';if(chg){cl+=' changed';if(ct==='sw')cl+=' ch-swap';else if(ct==='pl')cl+=' ch-place';else if(ct==='cl')cl+=' ch-clear'}if(hasN)cl+=' has-note';
 h+='<td class=\"'+cl+'\" data-r=\"'+r+'\" data-c=\"'+c+'\" style=\"background:'+co.b+';color:'+co.t+'\">';
-var hideBadge=(cell.cat==='PSOLVE'||cell.cat==='DYNAMIC'||cell.cat==='RECIRC'||cell.cat==='CYCLE')&&!isChanged(r,c);
+var hideBadge=(cell.cat==='PSOLVE'||cell.cat==='DYNAMIC'||cell.cat==='RECIRC')&&!isChanged(r,c);
 if(!hideBadge)h+='<span class=\"tb2 '+(cell.fl?'fl':'ml')+'\">'+(cell.fl?'F':'M')+'</span>';
 h+='<div class=\"ci\">'+E(cell.id)+'</div><div class=\"fn\">'+E(T(cell.f,9))+'</div>';
 if(cell.adv!=null)h+='<div class=\"av\">'+cell.adv+'</div>';
